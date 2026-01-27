@@ -46,7 +46,7 @@ def save_cache(content, timestamp):
         json.dump({"content": content, "time": timestamp.isoformat()}, f)
 
 app = None
-widget_instance = None
+# widget_instance moved to MainController
 feedTime = None
 content = None
 icon = None
@@ -57,19 +57,30 @@ class Communicate(QObject):
 
 comm = Communicate()
 
-def show_widget(content_text):
-    global widget_instance
-    print("Showing feed...")
-    if widget_instance is None:
-        widget_instance = DashboardWidget(content_text)
-    else:
-        widget_instance.update_content(content_text)
-    
-    widget_instance.show()
-    widget_instance.raise_() # Bring to front
-    widget_instance.activateWindow()
+class MainController(QObject):
+    def __init__(self):
+        super().__init__()
+        self.widget_instance = None
 
-comm.update_ui.connect(show_widget)
+    def show_widget(self, content_text):
+        print("Showing feed...")
+        if self.widget_instance is None:
+            self.widget_instance = DashboardWidget(content_text)
+        else:
+            self.widget_instance.update_content(content_text)
+        
+        self.widget_instance.show()
+        self.widget_instance.raise_() # Bring to front
+        self.widget_instance.activateWindow()
+
+    def handle_toggle(self):
+        # Check if widget is visible and close it if so
+        if self.widget_instance and self.widget_instance.isVisible():
+            print("Hiding feed...")
+            self.widget_instance.close()
+        else:
+            # Otherwise start the fetch process
+            threading.Thread(target=background_fetch, daemon=True).start()
 
 def background_fetch(override_cache=False):
     global feedTime
@@ -91,17 +102,7 @@ def background_fetch(override_cache=False):
     
     comm.update_ui.emit(content)
 
-def handle_toggle():
-    global widget_instance
-    # Check if widget is visible and close it if so
-    if widget_instance and widget_instance.isVisible():
-        print("Hiding feed...")
-        widget_instance.close()
-    else:
-        # Otherwise start the fetch process
-        threading.Thread(target=background_fetch, daemon=True).start()
-
-comm.toggle_visibility.connect(handle_toggle)
+# Removed handle_toggle function, moved to MainController
 
 def on_clicked(icon, item):
     global app
@@ -143,6 +144,12 @@ def main():
         pystray.MenuItem("Refresh", on_clicked),
         pystray.MenuItem("Exit", on_clicked)
     ))
+
+    # Initialize Controller and Signals
+    # Important: Create controller after app is created to ensure thread affinity with Main Thread
+    controller = MainController()
+    comm.update_ui.connect(controller.show_widget)
+    comm.toggle_visibility.connect(controller.handle_toggle)
     
     # Run pystray in a separate thread
     threading.Thread(target=icon.run, daemon=True).start()

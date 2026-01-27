@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -216,4 +215,4 @@ __marimo__/
 .streamlit/secrets.toml
 /venv
 /Release
-/dist
+/news_cache.json
