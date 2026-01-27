@@ -21,7 +21,7 @@ def updateFeed(base_path="."):
         else:
             interests = ["Tech News", "World Events"]
             
-        prompt = "Find and summarize the latest news in the following categories: " + ", ".join(interests) + " Try to find seperate sources for each topic."
+        prompt = "Find and summarize the latest news in the following categories: " + ", ".join(interests) + " Try to find seperate sources for each topic, and find only news from within the last 24 hours."
         
         response = client.models.generate_content(
             model="gemini-2.5-flash",
