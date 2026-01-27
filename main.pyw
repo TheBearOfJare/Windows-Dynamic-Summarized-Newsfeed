@@ -199,6 +199,10 @@ def main():
     app.setQuitOnLastWindowClosed(False)
     
     # Ensure icon exists or fallback to avoid crash
+    if os.path.exists(ICON_PATH):
+        app.setWindowIcon(QIcon(ICON_PATH))
+    
+    # Ensure icon exists or fallback to avoid crash
     if not os.path.exists(ICON_PATH):
         print(f"Warning: Icon not found at {ICON_PATH}")
 
