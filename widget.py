@@ -49,7 +49,7 @@ class DashboardWidget(QWidget):
         if screen:
             available_rect = screen.availableGeometry()
             width = 400  # Fixed width
-            height = 600 # Initial height
+            height = 700 # Initial height
             
             # accessible right edge - width
             x = available_rect.x() + available_rect.width() - width
@@ -57,7 +57,7 @@ class DashboardWidget(QWidget):
             
             self.setGeometry(x, y, width, height)
         else:
-            self.resize(400, 600)
+            self.resize(400, 700)
 
     def update_content(self, content):
         self.body.setText(content)

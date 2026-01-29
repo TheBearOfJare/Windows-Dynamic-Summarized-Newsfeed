@@ -14,6 +14,7 @@ pyinstaller GeminiNewsfeed.spec --clean --noconfirm
 echo Copying external resources...
 copy interests.txt dist\
 copy README.md dist\
+copy config.json dist\
 
 
 echo Build complete.

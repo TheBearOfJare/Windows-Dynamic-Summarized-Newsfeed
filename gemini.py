@@ -1,15 +1,21 @@
 from google import genai
 from google.genai import types
 import os
+import json
 
-client = genai.Client(api_key=os.getenv("gemini_key"))
+# Read the config json
+with open("config.json", "r") as f:
+    user_config = json.load(f)
+
+client = genai.Client(api_key=user_config['gemini_key'])
 
 grounding_tool = types.Tool(
     google_search=types.GoogleSearch()
 )
 
 config = types.GenerateContentConfig(
-    tools=[grounding_tool]
+    tools=[grounding_tool],
+    maxOutputTokens=user_config['response_length']
 )
 
 def updateFeed(base_path="."):
@@ -19,12 +25,12 @@ def updateFeed(base_path="."):
             with open(interests_path, "r") as f:
                 interests = [line.strip() for line in f.readlines() if line.strip()]
         else:
-            interests = ["Tech News", "World Events"]
+            interests = ["World Events"]
             
-        prompt = "Find and summarize the latest news in the following categories: " + ", ".join(interests) + " Try to find seperate sources for each topic, and find only news from within the last 24 hours."
+        prompt = "Find and summarize the latest news in the following categories: " + ", ".join(interests) + " Try to find seperate sources for each topic. This is a markdown document, so use markdown formatting for clarity and organization."
         
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=user_config['model'],
             contents=prompt,
             config=config,
         )
