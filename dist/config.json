@@ -1,5 +1,5 @@
 {
-    "gemini_key": "",
+    "gemini_key": "AIzaSyDLgqpw2I4OsEPxMyGN4aeSrG5AIz_62eg",
     "model": "gemini-2.5-flash",
     "refresh_interval_hours": 3,
     "response_length": 3840
